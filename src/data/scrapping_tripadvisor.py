@@ -19,7 +19,7 @@ def main():
     global writer
     fw = open(fileName, 'w', newline=',')
     writer = csv.writer(fw, delimiter=',', quoting=csv.QUOTE_MINIMAL)
-    writer.writerow(['number', 'link', 'date', 'name', 'text', 'rating', 'number_reviews'])
+    writer.writerow(['number', 'link', 'date', 'name', 'text', 'rating', 'n_reviews'])
 
     print("The output csv file is: %s " %(fileName))
     print("-----------------------------------------")
@@ -68,5 +68,33 @@ def analyze_story_page(url):
         for div in divs:
             itemCount += 1
 
-            # Extract name
+            # Extract name of the restaurant
             name_ = div.find("div", class_="restaurants-list-ListCell__restaurantName--2aSdo").get_text(" ", strip=True)
+            
+            # Extract review
+            if div.find("span", class_="ui_bubble_rating bubble_5") is not None:
+                review_ = 5
+            elif div.find("span", class_="ui_bubble_rating bubble_10") is not None:
+                review_ = 10
+            elif div.find("span", class_="ui_bubble_rating bubble_15") is not None:
+                review_ = 15
+            elif div.find("span", class_="ui_bubble_rating bubble_20") is not None:
+                review_ = 20
+            elif div.find("span", class_="ui_bubble_rating bubble_25") is not None:
+                review_ = 25
+            elif div.find("span", class_="ui_bubble_rating bubble_30") is not None:
+                review_ = 30
+            elif div.find("span", class_="ui_bubble_rating bubble_35") is not None:
+                review_ = 35
+            elif div.find("span", class_="ui_bubble_rating bubble_40") is not None:
+                review_ = 40
+            elif div.find("span", class_="ui_bubble_rating bubble_45") is not None:
+                review_ = 45
+            elif div.find("span", class_="ui_bubble_rating bubble_50") is not None:
+                review_ = 50
+            
+            # Extract number of reviews
+            n_reviews_ = div.find("span", class_="restaurants-list-ListCell__userReviewCount--2a61M").get_text(" ", strip=True)
+
+            # Extract first review
+            text_ = div.find("span", class="restaurants-list-components-ReviewSnippets__snippetText--22Umt").get_text(" ", strip=True)
