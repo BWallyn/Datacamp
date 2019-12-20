@@ -6,7 +6,7 @@ from datetime import datetime
 import re
 from collections import OrderedDict
 
-Max_items = 0
+Max_items = 2
 
 def main():
 
@@ -17,7 +17,7 @@ def main():
     global titleList
     titleList = []
     global writer
-    fw = open(fileName, 'w', newline=',')
+    fw = open(fileName, 'w', newline='')
     writer = csv.writer(fw, delimiter=',', quoting=csv.QUOTE_MINIMAL)
     writer.writerow(['number', 'link', 'date', 'name', 'text', 'rating', 'n_reviews'])
 
@@ -46,7 +46,29 @@ def analyze_index_page(url):
     soup = BeautifulSoup(urllib.request.urlopen(url))
     listLinks = []
 
-    for link in soup.findAll(href=re.compile("Show"))
+    #for link in soup.findAll(href=re.compile("ShowTopic")):### To change#
+    for link in soup.findAll(href=re.compile("EATERY_OVERVIEW_BOX")):
+        listLinks.append(link.get('href'))
+    for l in listLinks:
+        if "#" in l:
+            lClean = l.split("#")[0]
+            listLinks.append(lClean)
+        if "#" in l:
+            listLinks.remove(l)
+    links = list(OrderedDict.fromkeys(listLinks))
+
+    # Iterate again through all links in the list to analyze the relevant story pages
+    for storyLink in links:
+        analyze_story_page("http://" + host + storyLink)
+    #nextAnchor = soup.find("a", class_="guiArw sprite-pageNext")### To change
+    nextAnchor = soup.find("a", class_="nav next rndBtn ui_button primary taLnk")
+    if nextAnchor:
+        nextLink = nextAnchor.get('href')
+        if (nextLink):
+            nextLink = "http://" + host + nextLink
+            return nextLink
+    return None
+        
 
 
 def analyze_story_page(url):
@@ -72,29 +94,51 @@ def analyze_story_page(url):
             name_ = div.find("div", class_="restaurants-list-ListCell__restaurantName--2aSdo").get_text(" ", strip=True)
             
             # Extract review
-            if div.find("span", class_="ui_bubble_rating bubble_5") is not None:
+            if div.find("span", class_="ui_bubble_rating bubble_5"):
                 review_ = 5
-            elif div.find("span", class_="ui_bubble_rating bubble_10") is not None:
+            elif div.find("span", class_="ui_bubble_rating bubble_10"):
                 review_ = 10
-            elif div.find("span", class_="ui_bubble_rating bubble_15") is not None:
+            elif div.find("span", class_="ui_bubble_rating bubble_15"):
                 review_ = 15
-            elif div.find("span", class_="ui_bubble_rating bubble_20") is not None:
+            elif div.find("span", class_="ui_bubble_rating bubble_20"):
                 review_ = 20
-            elif div.find("span", class_="ui_bubble_rating bubble_25") is not None:
+            elif div.find("span", class_="ui_bubble_rating bubble_25"):
                 review_ = 25
-            elif div.find("span", class_="ui_bubble_rating bubble_30") is not None:
+            elif div.find("span", class_="ui_bubble_rating bubble_30"):
                 review_ = 30
-            elif div.find("span", class_="ui_bubble_rating bubble_35") is not None:
+            elif div.find("span", class_="ui_bubble_rating bubble_35"):
                 review_ = 35
-            elif div.find("span", class_="ui_bubble_rating bubble_40") is not None:
+            elif div.find("span", class_="ui_bubble_rating bubble_40"):
                 review_ = 40
-            elif div.find("span", class_="ui_bubble_rating bubble_45") is not None:
+            elif div.find("span", class_="ui_bubble_rating bubble_45"):
                 review_ = 45
-            elif div.find("span", class_="ui_bubble_rating bubble_50") is not None:
+            elif div.find("span", class_="ui_bubble_rating bubble_50"):
                 review_ = 50
             
             # Extract number of reviews
             n_reviews_ = div.find("span", class_="restaurants-list-ListCell__userReviewCount--2a61M").get_text(" ", strip=True)
 
             # Extract first review
-            text_ = div.find("span", class="restaurants-list-components-ReviewSnippets__snippetText--22Umt").get_text(" ", strip=True)
+            text_ = div.find("span", class_="restaurants-list-components-ReviewSnippets__snippetText--22Umt").get_text(" ", strip=True)
+
+        # Find next page
+        nextAnchor = soup.find("a", class_="")
+        if nextAnchor:
+            nextLink = nextAnchor.get('href')
+            if nextLink:
+                nextLink = "https://www.tripadvisor.com/" + nextLink
+                analyze_story_page(nextLink)
+        return None
+        
+    except urllib.error.HTTPError as e:
+        # Exception handling. Be verbose on HTTP errors such as 404 (not found).
+        sys.stdout.write("    HTTPError: {0}\n".format(e))
+        return
+    except:
+        # Exceptions thrown by operations on non-existing structures
+        sys.stdout.write("    Structure exception: {0}\n".format(sys.exc_info()[0]))
+        return
+
+
+if __name__ == '__main__':
+    main()#!/usr/bin/env python
