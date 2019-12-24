@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import urllib.request, urllib.error, urllib.parse
+import requests
 import sys
 import csv
 from datetime import datetime
@@ -36,36 +37,78 @@ def main():
     # Done doing the scrapping
     print("Process completed with %d restaurants" % (itemCount))
 
+
+
 def analyze_index_page(url):
     """
     """
 
+    global itemCount
+
     print("Analyze index page %s" %(url))
 
-    host = urllib.parse.urlparse(url).netloc
-    soup = BeautifulSoup(urllib.request.urlopen(url))
-    listLinks = []
+    #host = urllib.parse.urlparse(url).netloc
+    #host = requests.compat.urlparse(url).hostname
+    host = "www.tripadvisor.com"
+    r = requests.get(url)
+    print("Status code of the page: ", r.status_code)
+    soup = BeautifulSoup(r.text, features="html.parser")
 
-    #for link in soup.findAll(href=re.compile("ShowTopic")):### To change#
-    for link in soup.findAll(href=re.compile("EATERY_OVERVIEW_BOX")):
-        listLinks.append(link.get('href'))
-    for l in listLinks:
-        if "#" in l:
-            lClean = l.split("#")[0]
-            listLinks.append(lClean)
-        if "#" in l:
-            listLinks.remove(l)
-    links = list(OrderedDict.fromkeys(listLinks))
+    divs = soup.findAll("div", class_="restaurants-list-ListCell__infoWrapper--3agHz")
+    for div in divs:
+        try:
+            itemCount += 1
 
-    # Iterate again through all links in the list to analyze the relevant story pages
-    for storyLink in links:
-        analyze_story_page("http://" + host + storyLink)
-    #nextAnchor = soup.find("a", class_="guiArw sprite-pageNext")### To change
+            # Extract name of the restaurant
+            print(div.find("div", class_="restaurants-list-ListCell__nameBlock--1hL7F"))
+            #name_ = div.find("div", class_="restaurants-list-ListCell__restaurantName--2aSdo").get_text(" ", strip=True)
+            name_ = div.find("div", class_="restaurants-list-ListCell__nameBlock--1hL7F").get_text(" ", strip=True)
+            
+            # Extract review
+            if div.find("span", class_="ui_bubble_rating bubble_5"):
+                review_ = 5
+            elif div.find("span", class_="ui_bubble_rating bubble_10"):
+                review_ = 10
+            elif div.find("span", class_="ui_bubble_rating bubble_15"):
+                review_ = 15
+            elif div.find("span", class_="ui_bubble_rating bubble_20"):
+                review_ = 20
+            elif div.find("span", class_="ui_bubble_rating bubble_25"):
+                review_ = 25
+            elif div.find("span", class_="ui_bubble_rating bubble_30"):
+                review_ = 30
+            elif div.find("span", class_="ui_bubble_rating bubble_35"):
+                review_ = 35
+            elif div.find("span", class_="ui_bubble_rating bubble_40"):
+                review_ = 40
+            elif div.find("span", class_="ui_bubble_rating bubble_45"):
+                review_ = 45
+            elif div.find("span", class_="ui_bubble_rating bubble_50"):
+                review_ = 50
+            else:
+                review_ = 0
+            
+            # Extract number of reviews
+            n_reviews_ = div.find("span", class_="restaurants-list-ListCell__userReviewCount--2a61M").get_text(" ", strip=True)
+
+            # Extract first review
+            text_ = div.find("span", class_="restaurants-list-components-ReviewSnippets__snippetText--22Umt").get_text(" ", strip=True)
+
+            # date
+            date_ = datetime.now().strftime('%Y%m%d_%H%M')
+
+            writer.writerow( (itemCount, url, date_, name_, "_nothing_", review_, n_reviews_) )
+        except:
+            print("problem")
+
     nextAnchor = soup.find("a", class_="nav next rndBtn ui_button primary taLnk")
     if nextAnchor:
         nextLink = nextAnchor.get('href')
         if (nextLink):
-            nextLink = "http://" + host + nextLink
+            #nextLink = requests.compat.urljoin("https:", host, nextLink)
+            #nextLink_ = requests.compat.urljoin("https://", host)
+            #nextLink = requests.compat.urljoin(nextLink_, nextLink)
+            nextLink = "https://" + host + nextLink
             return nextLink
     return None
         
@@ -84,7 +127,10 @@ def analyze_story_page(url):
     # Show what page we are looking at
     print("   %s - analyzeStoryPage %s" % (str(itemCount).zfill(5), url))
     try :
-        soup = BeautifulSoup(urllib.request.urlopen(url))
+        r = requests.get(url)
+        print("Status code of the page in try: ", r.status_code)
+        soup = BeautifulSoup(r.text)
+        #soup = BeautifulSoup(urllib.request.urlopen(url))
         #divs = soup.findAll("div", class_="restaurants-list-ListCell__cellContainer--2mpJS")
         divs = soup.findAll("div", class_="restaurants-list-ListCell__infoWrapper--3agHz")
         for div in divs:
@@ -114,6 +160,8 @@ def analyze_story_page(url):
                 review_ = 45
             elif div.find("span", class_="ui_bubble_rating bubble_50"):
                 review_ = 50
+            else:
+                review_ = 0
             
             # Extract number of reviews
             n_reviews_ = div.find("span", class_="restaurants-list-ListCell__userReviewCount--2a61M").get_text(" ", strip=True)
