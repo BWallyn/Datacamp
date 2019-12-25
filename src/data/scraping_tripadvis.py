@@ -60,7 +60,6 @@ def analyze_index_page(url):
             itemCount += 1
 
             # Extract name of the restaurant
-            print(div.find("div", class_="restaurants-list-ListCell__nameBlock--1hL7F"))
             #name_ = div.find("div", class_="restaurants-list-ListCell__restaurantName--2aSdo").get_text(" ", strip=True)
             name_ = div.find("div", class_="restaurants-list-ListCell__nameBlock--1hL7F").get_text(" ", strip=True)
             
@@ -89,7 +88,11 @@ def analyze_index_page(url):
                 review_ = 0
             
             # Extract number of reviews
-            n_reviews_ = div.find("span", class_="restaurants-list-ListCell__userReviewCount--2a61M").get_text(" ", strip=True)
+            text_reviews_ = div.find("span", class_="restaurants-list-ListCell__userReviewCount--2a61M").get_text(" ", strip=True)
+            text_reviews_ = text_reviews_.replace(',', '')
+            print(text_reviews_)
+            print(int(text_reviews_[:text_reviews_.rfind(' ')]))
+            n_reviews_ = int(text_reviews_[:text_reviews_.rfind(' ')])
 
             # Extract first review
             text_ = div.find("span", class_="restaurants-list-components-ReviewSnippets__snippetText--22Umt").get_text(" ", strip=True)
@@ -97,7 +100,7 @@ def analyze_index_page(url):
             # date
             date_ = datetime.now().strftime('%Y%m%d_%H%M')
 
-            writer.writerow( (itemCount, url, date_, name_, "_nothing_", review_, n_reviews_) )
+            writer.writerow( (itemCount, url, date_, name_, text_, review_, n_reviews_) )
         except:
             print("problem")
 
