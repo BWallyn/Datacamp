@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-import urllib.request, urllib.error, urllib.parse
+import urllib.error
 import requests
 import sys
 import csv
