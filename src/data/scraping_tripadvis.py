@@ -21,7 +21,7 @@ def main():
     global writer
     fw = open(fileName, 'w', newline='')
     writer = csv.writer(fw, delimiter=',', quoting=csv.QUOTE_MINIMAL)
-    writer.writerow(['number', 'link', 'date', 'name', 'first_review', 'second_review', 'rating', 'n_reviews', 'type'])
+    writer.writerow(['number', 'link', 'date', 'name', 'first_review', 'second_review', 'rating', 'n_reviews', 'type', 'price_range', 'price'])
 
     print("The output csv file is: %s " %(fileName))
     print("-----------------------------------------")
@@ -101,10 +101,25 @@ def analyze_index_page(url):
             # date
             date_ = datetime.now().strftime('%Y%m%d_%H%M')
 
-            # type of restaurant
-            type_ = div.find("span", class_="restaurants-list-ListCell__infoCell--1Fz8a").get_text(" ", strip=True)
 
-            writer.writerow( (itemCount, url, date_, name_, first_review_, second_review_, rating_, n_ratings_) )#, type_) )
+            # Type and price
+            type_price_div = div.find("div", class_="restaurants-list-ListCell__infoRow--31xBt restaurants-list-ListCell__hideLeftDivider--3vXbe restaurants-list-ListCell__cuisinePriceMenu--r4-Re")
+            type_price_text = type_price_div.get_text(" ", strip=True)
+
+            # type of restaurant
+            type_ = type_price_text[:type_price_text.find('$')-1]
+
+            # price of the restaurant
+            price_range = type_price_text[type_price_text.find('$'):type_price_text.rfind('$')+1]
+            n_dollar = price_range.count('$')
+            if n_dollar == 1:
+                price_ = "cheap_eats"
+            elif n_dollar == 5:
+                price_ = "mid_range"
+            elif n_dollar == 4:
+                price_ = "fine_dining"
+
+            writer.writerow( (itemCount, url, date_, name_, first_review_, second_review_, rating_, n_ratings_, type_, price_range, price_) )
 
             # if (Max_items > 0)  and (itemCount > Max_items):
             #     print("Stopped scrapping after %d restaurants \n" %(Max_items))
