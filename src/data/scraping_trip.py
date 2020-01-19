@@ -201,18 +201,19 @@ def analyze_restaurant_page(url, itemCount, n_max_reviews=5):
     # Reviews
 
     # Distribution rating
+    n_reviews = [0]*5
     div_rev = soup.find("div", class_="ratings_and_types block_wrap ui_section")
     div_filt = div_rev.find("div", class_="collapsibleContent ppr_rup ppr_priv_detail_filters")
-    div_choice = div_filt.find("div", class_="choices")
-    divs = div_choice.find_all("div", class_="ui_checkbox item")
+    if div_filt:
+        div_choice = div_filt.find("div", class_="choices")
+        divs = div_choice.find_all("div", class_="ui_checkbox item")
 
-    n_reviews = [0]*5
-    for i in range(len(divs)):
-        try:
-            n_reviews_text = divs[i].find("span", class_="row_num is-shown-at-tablet").get_text(" ", strip=True).replace(",", "")
-            n_reviews[i] = int(n_reviews_text)
-        except:
-            n_reviews[i] = 0
+        for i in range(len(divs)):
+            try:
+                n_reviews_text = divs[i].find("span", class_="row_num is-shown-at-tablet").get_text(" ", strip=True).replace(",", "")
+                n_reviews[i] = int(n_reviews_text)
+            except:
+                n_reviews[i] = 0
     
     # Reviews
     list_reviews = [""]*n_max_reviews
@@ -222,7 +223,8 @@ def analyze_restaurant_page(url, itemCount, n_max_reviews=5):
         divs = div_list_rev.find_all("div", class_="ui_column is-9")
         max_rev = min(len(divs), n_max_reviews)
         for i in range(max_rev):
-            list_reviews[i] = divs[i].find("div", class_="prw_rup prw_reviews_text_summary_hsx").get_text(" ", strip=True)
+            list_reviews[i] = re.sub('[^a-zA-Z.\d\s]', '', divs[i].find("div", class_="prw_rup prw_reviews_text_summary_hsx").get_text(" ", strip=True))
+            
     except:
         list_reviews = [""]*n_max_reviews
 
@@ -230,7 +232,7 @@ def analyze_restaurant_page(url, itemCount, n_max_reviews=5):
     writer.writerow( (itemCount, url, date, name, rating, n_reviews, price, location, borough,
                     price_range, cuisines, special_diets, meals, features,
                     n_reviews[0], n_reviews[1], n_reviews[2], n_reviews[3], n_reviews[4],
-                    list_reviews) )
+                    str(list_reviews)) )
 
 if __name__ == '__main__':
     main()#!/usr/bin/env python
