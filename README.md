@@ -2,7 +2,12 @@
 
 _Authors: Emma Demarecaux, Charles Desaleux, Romain Fabre, Julien Lenhardt, Luz Pascal, Benjamin Wallyn_
 
-Description..
+The Health Department has developed an inspection report and scoring system. After conducting an inspection of the facility, the Health Inspector calculates a score based on the violations observed. Violations can fall into:
+* **high risk category**: records specific violations that directly relate to the transmission of food borne illnesses, the adulteration of food products and the contamination of food-contact surfaces;
+* **moderate risk category**: records specific violations that are of a moderate risk to the public health and safety;
+* **low risk category**: records violations that are low risk or have no immediate risk to the public health and safety.
+
+Our goal is to estimate the restaurant score in order to help health inspectors select places that may not respect the health quality needed for a restaurant.
 
 ## Set up
 
