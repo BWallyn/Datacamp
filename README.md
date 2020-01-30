@@ -22,7 +22,7 @@ Open a terminal and
 
 ## Project structure
 
-The project structure has been made using the project structure [Cookiecutter for Data Science](https://drivendata.github.io/cookiecutter-data-science/)
+The project structure has been made using the project structure [Cookiecutter for Data Science](https://drivendata.github.io/cookiecutter-data-science/).
 
 ## Local notebook
 
