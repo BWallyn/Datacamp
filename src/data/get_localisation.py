@@ -35,5 +35,6 @@ def main():
 
     data.to_csv(data_path+'/interim/enhanced_restaurant_scores.csv', index=False)
 
+
 if __name__ == '__main__':
     main()
