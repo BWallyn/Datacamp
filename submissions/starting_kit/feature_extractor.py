@@ -20,21 +20,21 @@ class FeatureExtractor(object):
 
         def get_range_number(x, typ):
             if typ == 'min':
-                if str(x).split('\x80')[0] == 'nan':
+                if str(x).split('€')[0] == 'nan':
                     return(np.nan)
                 else:
-                    return(np.int(str(x).split('\x80')[1].split(' ')[0]))
+                    return(np.int(str(x).split('€')[1].split(' ')[0]))
             if typ == 'max':
-                if str(x).split('\x80')[0] == 'nan':
+                if str(x).split('€')[0] == 'nan':
                     return(np.nan)
                 else:
-                    return(np.int(str(x).split('\x80')[2].split(' ')[0]))
+                    return(np.int(str(x).split('€')[2].split(' ')[0]))
 
         path = os.path.dirname(__file__)
         tripadvisor = pd.read_csv(os.path.join(path, 'tripadvisor_dataset.csv'), low_memory=False)
         tripadvisor['name'] = tripadvisor['name'].str.lower().str.replace('[^\w]','').apply(lambda s : ''.join(filter(str.isalpha, s)))
-        tripadvisor['price_range_min'] = list(map(lambda x: get_range_number(x, 'min'), merged["price_range"]))
-        tripadvisor['price_range_max'] = list(map(lambda x: get_range_number(x, 'max'), merged["price_range"]))
+        tripadvisor['price_range_min'] = list(map(lambda x: get_range_number(x, 'min'), tripadvisor["price_range"]))
+        tripadvisor['price_range_max'] = list(map(lambda x: get_range_number(x, 'max'), tripadvisor["price_range"]))
 
 
         def lat_long(X):
