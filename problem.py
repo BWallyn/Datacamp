@@ -26,7 +26,7 @@ workflow = Restaurant()
 #--------------------------------------------
 
 # Penalised root mean square error
-class PenalisedRMSE(BaseScoreType):
+class Penalised_RMSE(BaseScoreType):
     is_lower_the_better = True
     minimum = 0.0
     maximum = float('inf')
@@ -39,12 +39,12 @@ class PenalisedRMSE(BaseScoreType):
         if isinstance(y_true, pd.Series):
             y_true = y_true.values
         penalization = 1.5*(y_pred > y_true) + 1*(y_pred <= y_true)
-        loss = np.sqrt(np.mean((y_true - y_pred)**2*penalisation))
+        loss = np.sqrt(np.mean((y_true - y_pred)**2*penalization))
         return loss
 
 score_types = [
     # Penalised root mean square error
-    PenalisedRMSE(name='Score error', precision=2),
+    Penalised_RMSE(name='Score error', precision=2),
 ]
 
 #--------------------------------------------
