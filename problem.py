@@ -15,7 +15,7 @@ Predictions = rw.prediction_types.make_regression()
 
 class Restaurant(FeatureExtractorRegressor):
     def __init__(self, workflow_element_names=[
-            'feature_extractor', 'regressor', 'scrapping_tripadvisor.csv', 'previous_inspections.csv']):
+            'feature_extractor', 'regressor', 'tripadvisor_dataset.csv', 'historic_restaurant_scores.csv']):
         super(Restaurant, self).__init__(workflow_element_names[:2])
         self.element_names = workflow_element_names
 
@@ -60,7 +60,7 @@ def get_cv(X, y):
 #--------------------------------------------
 
 def _read_data(path, f_name):
-    data = pd.read_csv(os.path.join(path, 'data', f_name), low_memory=False, compression='zip')
+    data = pd.read_csv(os.path.join(path, 'data/interim', f_name), low_memory=False, compression='zip')
     y_array = data[_target_column_name].values
     X_df = data.drop(_target_column_name, axis=1)
     return X_df, y_array
