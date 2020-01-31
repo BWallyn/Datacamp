@@ -1,6 +1,14 @@
 numpy
 pandas
 geopandas
+seaborn
+shapely
+matplotlib
+contextily
+datetime
+shapely
 BeautifulSoup
 urllib
+mpl_toolkits
+descartes
 requests
