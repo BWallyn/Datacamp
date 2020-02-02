@@ -1,4 +1,4 @@
-# RAMP starting kit on Restaurant scores lives standard
+# RAMP starting kit on Restaurant Health Scores
 
 _Authors: Emma Demarecaux, Charles Desaleux, Romain Fabre, Julien Lenhardt, Luz Pascal, Benjamin Wallyn_
 
